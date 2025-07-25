@@ -72,4 +72,7 @@ frames = int(SIM_DURATION / DT)
 ani = animation.FuncAnimation(fig, update, frames=frames, interval=500, blit=True, repeat=False)
 
 plt.tight_layout()
-plt.show()
+# plt.show()
+
+ani.save("visuals/traffic_animation.gif", writer="pillow", fps=2)
+print("✅ Анимация сохранена в visuals/")
