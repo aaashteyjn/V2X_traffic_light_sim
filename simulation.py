@@ -47,10 +47,10 @@ with open(log_path, mode="w", newline="") as file:
         writer.writerow([t, traffic_light.state, stopped_count])
 
         # text-output
-        print(f"\n⏱ Время: {t} сек")
-        print(f"🚦 Светофор: {traffic_light.state.upper()}")
+        print(f"\n⏱ Time: {t} s")
+        print(f"🚦 Traffic light: {traffic_light.state.upper()}")
         for v in vehicles:
-            print(f"🚗 Машина {v.id}: позиция={v.position:.1f}м, {'СТОИТ' if v.stopped else 'едет'}")
+            print(f"🚗 Car {v.id}: position={v.position:.1f}m, {'WAIT' if v.stopped else 'move'}")
 
 # plot
 def plot_queue(log_file):
@@ -62,9 +62,9 @@ def plot_queue(log_file):
             queues.append(int(row["stopped_vehicles"]))
 
     plt.plot(times, queues, marker='o')
-    plt.title("Количество остановившихся машин во времени")
-    plt.xlabel("Время (сек)")
-    plt.ylabel("Длина очереди (машин)")
+    plt.title("Compare queues in time")
+    plt.xlabel("Time (sec)")
+    plt.ylabel("Cars in queue")
     plt.grid(True)
     plt.savefig("visuals/queue_plot.png")
     plt.show()

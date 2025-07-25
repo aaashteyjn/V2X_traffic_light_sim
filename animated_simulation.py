@@ -20,8 +20,8 @@ traffic_light = TrafficLight(position=LIGHT_POSITION)
 fig, ax = plt.subplots(figsize=(10, 2))
 ax.set_xlim(-100, 120)
 ax.set_ylim(-2, 2)
-ax.set_title("V2X Анимация")
-ax.axis('off')  # убираем оси
+ax.set_title("V2X Animation")
+ax.axis('off')  # remove
 
 # background
 road = patches.Rectangle((-120, -0.5), 240, 1, color='lightgray')
@@ -75,4 +75,4 @@ plt.tight_layout()
 # plt.show()
 
 ani.save("visuals/traffic_animation.gif", writer="pillow", fps=2)
-print("✅ Анимация сохранена в visuals/")
+print("✅ Animation saved in visuals/")
