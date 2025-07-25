@@ -149,4 +149,4 @@ Alina Dobershteyjn, 2025
 
 ## 📎 Contacts
 
-For questions: [asdobershteyjn@gmail.com / GitHub aaashteyjn / Telegram @user896745]
+For questions: [adobershteyjn@gmail.com / GitHub aaashteyjn / Telegram @user896745]
