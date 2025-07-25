@@ -35,6 +35,7 @@ Two modes of operation are supported:
 
 ## 📂 Project Structure
 
+```
 v2x_traffic_light_sim/
 ├── vehicle.py # Vehicle class
 ├── traffic_light.py # TrafficLight class
@@ -51,6 +52,7 @@ v2x_traffic_light_sim/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+```
 
 ---
 
