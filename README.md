@@ -137,7 +137,7 @@ This project demonstrates a simple but effective implementation of a V2I adaptiv
 
 ## 📄 Technical Report (PDF)
 
-[Technical description (PDF)](docs/technical_description.pdf)
+[Technical description (Markdown)](docs/technical_description.md)
 
 ---
 
