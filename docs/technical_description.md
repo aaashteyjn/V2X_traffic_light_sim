@@ -1,82 +1,101 @@
-Проект: V2X Traffic Light Simulation
-Автор: Алина Доберштейн
-Год: 2025
+# 📝 Technical Description
 
-1. Тема проекта
-Симуляция адаптивного светофора, использующего технологию V2I (Vehicle-to-Infrastructure) для управления дорожным движением в зависимости от плотности трафика.
+**Project:** V2X Traffic Light Simulation  
+**Author:** Alina Dobershteyjn 
+**Year:** 2025  
 
-2. Цель работы
-Разработка и исследование простой модели взаимодействия между транспортными средствами и светофором, использующей обмен данными (V2X), с целью оптимизации времени ожидания и длины очереди на перекрёстке.
+---
 
-3. Задачи
-Реализовать на Python модель дороги, транспортных средств и светофора.
+## 1. Project Topic
 
-Добавить V2I-коммуникацию: машины передают данные о себе светофору.
+Simulation of an adaptive traffic light that uses V2I (Vehicle-to-Infrastructure) communication to regulate road traffic based on vehicle density.
 
-Реализовать два режима работы:
+---
 
-Адаптивный (на основе V2X-данных),
+## 2. Objective
 
-Обычный (фиксированный таймер).
+To design and study a simple model of interaction between vehicles and a traffic light using V2X data exchange.  
+The goal is to optimize waiting time and reduce traffic queue length at an intersection.
 
-Сравнить эффективность обоих подходов по метрике длины очереди.
+---
 
-Визуализировать движение транспорта и результат анализа.
+## 3. Tasks
 
-4. Используемые технологии
-Язык программирования: Python 3.10+
+- Implement a Python model of a road, vehicles, and a traffic light.
+- Add V2I communication: vehicles transmit their data to the traffic light.
+- Implement two operating modes:
+  - **Adaptive Mode** — decision-making based on real-time V2X input.
+  - **Fixed-Timer Mode** — regular phase switching without feedback.
+- Compare the efficiency of both approaches using queue length metrics.
+- Visualize vehicle movement and analytical results.
 
-Библиотеки: matplotlib
+---
 
-Формат хранения данных: CSV
+## 4. Technologies Used
 
-Визуализация: статичные графики и GIF-анимация
+- **Programming Language:** Python 3.10+
+- **Libraries:** `matplotlib`
+- **Data format:** CSV
+- **Visualization:** static plots and animated GIF
+- **Development Tools:** VS Code, Jupyter Notebook, or any Python IDE
 
-Среда разработки: VS Code / Jupyter / любая Python IDE
+---
 
-5. Описание модели
-Объекты:
-Vehicle (Машина):
-Имеет координату, скорость и статус (движется / остановлена). Передаёт данные в V2I-объект (светофор).
+## 5. Model Description
 
-TrafficLight (Светофор):
-Имеет позицию и состояние (зелёный / красный). В режиме V2I оценивает входящие данные и принимает решение о смене сигнала.
+### Entities:
 
-Ключевые параметры:
-Количество машин: 5
+- **Vehicle:**  
+  Stores coordinates, speed, and status (moving/stopped).  
+  Sends data to the traffic light via V2I.
 
-Позиция светофора: 100 м
+- **TrafficLight:**  
+  Has a position and a signal state (green/red).  
+  In adaptive mode, it analyzes V2I input and decides whether to switch the signal.
 
-Порог остановки: 5 м
+### Key Parameters:
 
-Порог V2I-решения: ≥3 машин в 30 м
+| Parameter                  | Value                          |
+|----------------------------|---------------------------------|
+| Number of vehicles         | 5                               |
+| Traffic light position     | 100 meters                     |
+| Stop threshold             | 5 meters                       |
+| V2I trigger condition      | ≥3 vehicles within 30 meters   |
 
-6. Результаты
-График длины очереди во времени:
+---
 
-адаптивный режим показал значительное снижение количества остановившихся машин.
+## 6. Results
 
-Сравнение режимов (файл queue_comparison.png)
-→ Адаптивный светофор позволяет сократить задержки до ~40%.
+- **Queue length graph over time**  
+  → Adaptive mode showed a significant reduction in the number of stopped vehicles.
 
-Анимация движения машин (traffic_animation.gif) показывает остановку на красный и динамику управления фазами.
+- **Mode comparison (file: `queue_comparison.png`)**  
+  → The adaptive traffic light reduced delay by up to ~40%.
 
-Диаграмма V2X наглядно демонстрирует зону обмена данными и роль светофора в обработке сигнала.
+- **Animation (`traffic_animation.gif`)**  
+  Visualizes red-light stops and dynamic signal control.
 
-7. Выводы
-Даже простая модель V2I демонстрирует повышение эффективности движения.
+- **V2X Diagram (`v2x_diagram.png`)**  
+  Shows the data exchange zone and the role of the traffic light in decision-making.
 
-Проект может быть основой для более сложной системы с перекрёстками, многополосностью и предсказательной аналитикой.
+---
 
-Реализация на Python делает модель доступной для расширения и визуализации.
+## 7. Conclusion
 
-8. Приложения
-simulation.py — базовая симуляция
+Even a basic V2I simulation improves traffic efficiency.  
+This project can serve as a foundation for more advanced systems involving:
+- multi-lane control,  
+- multiple intersections,  
+- predictive analytics.
 
-animated_simulation.py — анимация
+Python implementation ensures accessibility, extensibility, and visual clarity.
 
-compare_simulation.py — сравнение режимов
+---
 
-visuals/ — графики и анимация
+## 8. Attachments
 
-README.md — краткое описание и инструкции
+- `simulation.py` — core simulation logic  
+- `animated_simulation.py` — animated movement with matplotlib  
+- `compare_simulation.py` — side-by-side comparison of modes  
+- `visuals/` — graphs, diagrams, and GIFs  
+- `README.md` — project overview and usage instructions
