@@ -1,4 +1,4 @@
-![Banner](visuals/banner.png)
+![Banner](visuals/image.png)
 
 # 🚦 V2X Traffic Light Simulation
 **Adaptive Traffic Control Using V2I Communication**
