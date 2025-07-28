@@ -11,7 +11,7 @@ class Vehicle:
 
         if self.type == "car":
             self.length = length if length else 4.5
-            self.max_speed = speed if speed else random.uniform(8, 12)  # м/с
+            self.max_speed = speed if speed else random.uniform(8, 12)
             self.acceleration = 2.5
             self.deceleration = -4.0
         else:
@@ -32,28 +32,23 @@ class Vehicle:
         self.random_brake_chance = 0.05 if is_troublemaker else 0
 
     def lane_y(self):
-        """Возвращает Y-координату машины по полосе"""
         return -0.3 + self.lane * 0.8
 
     def move(self, dt, front_vehicle=None, light_state="green", light_position=None):
         dist_light = self.distance_to_light(light_position) if light_position else float('inf')
         need_to_stop = False
 
-        # светофор
         if light_state == "red" and dist_light < 10:
             need_to_stop = True
 
-        # машина впереди
         if front_vehicle:
             gap = (front_vehicle.position - self.position) - front_vehicle.length
             if gap < 5:
                 need_to_stop = True
 
-        # непредсказуемое торможение
         if self.is_troublemaker and random.random() < self.random_brake_chance:
             need_to_stop = True
 
-        # задержка реакции
         if need_to_stop:
             self.delay_timer += dt
             if self.delay_timer >= self.reaction_delay:
@@ -62,22 +57,18 @@ class Vehicle:
             self.delay_timer = 0
             self.stopped = False
 
-        # динамика скорости
         if self.stopped:
             self.speed = max(0, self.speed + self.deceleration * dt)
         else:
             self.speed = min(self.max_speed, self.speed + self.acceleration * dt)
 
-        # движение
         self.position += self.speed * dt
 
     def can_change_lane(self, other_vehicles, num_lanes, direction):
-        """Проверяет возможность перестроения: direction=-1 (влево), +1 (вправо)"""
         new_lane = self.lane + direction
         if new_lane < 0 or new_lane >= num_lanes:
             return False
 
-        # ближайшие машины на новой полосе
         front = None
         back = None
         for ov in other_vehicles:
@@ -92,7 +83,6 @@ class Vehicle:
         if not (safe_front and safe_back):
             return False
 
-        # оценка выгоды
         front_current = None
         for ov in other_vehicles:
             if ov.lane == self.lane and ov.position > self.position:
@@ -105,7 +95,6 @@ class Vehicle:
         return new_speed_ahead > current_speed_ahead + 1
 
     def change_lane(self, direction):
-        """Меняет полосу"""
         self.lane += direction
 
     def distance_to_light(self, light_position):
@@ -122,3 +111,22 @@ class Vehicle:
             'lane': self.lane,
             'distance_to_light': self.distance_to_light(light_position)
         }
+
+    def broadcast_event(self, event_type, receivers, current_time):
+        """Создаёт V2V-сообщения для других машин"""
+        messages = []
+        for r in receivers:
+            if r.id == self.id:
+                continue
+            delay = random.uniform(0.05, 0.2)  # 50–200 мс
+            delivered = random.random() > 0.1  # 10% потерь
+            messages.append({
+                "time_sent": current_time,
+                "time_receive": current_time + delay,
+                "sender": self.id,
+                "receiver": r.id,
+                "event": event_type,
+                "delay": round(delay, 3),
+                "delivered": delivered
+            })
+        return messages
