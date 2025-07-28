@@ -2,7 +2,9 @@
 
 # 🚦 V2X Traffic Light Simulation
 **Adaptive Traffic Control Using V2I Communication**
-> This project demonstrates a Python-based simulation of adaptive traffic light control using V2X (Vehicle-to-Infrastructure) communication. The system reacts dynamically to real-time traffic conditions based on data received from approaching vehicles.
+
+This project simulates adaptive traffic light control using V2X (Vehicle-to-Infrastructure) communication.  
+The system dynamically reacts to real-time traffic conditions, reducing waiting times and improving flow efficiency. 
 
 ---
 
@@ -18,18 +20,23 @@ Two modes of operation are supported:
 
 ## 🧱 Architecture
 
-- **Vehicle** — the object representing a car that moves and sends data to the traffic light.  
-- **TrafficLight** — the object that analyzes incoming data and controls the light phase.  
-- **Simulation** — the main script that brings everything together, logs data, and generates graphs.
+- **Vehicle** — represents a car or truck, moves with acceleration/deceleration, reacts with delay, and may exhibit unpredictable behavior (troublemaker).  
+- **TrafficLight** — controls signal phases based on fixed timer or V2I adaptive logic.  
+- **Simulation** — integrates all components, logs events, produces visualizations and analytics.  
+- **Analysis** — processes simulation logs to produce queue length, trajectories, and speed graphs.  
+
 
 ---
 
-## 🧠 Key Concepts
+## 📌 Features
 
-- **V2X Communication**  
-- **Traffic Simulation in Python**  
-- **Data-Driven Decision Making**  
-- **Comparative Visualization (adaptive vs fixed)**
+- Random vehicle generation (positions, speeds, types).  
+- Vehicle classes: **cars** (faster, shorter) and **trucks** (slower, longer).  
+- **Reaction delays** to simulate driver behavior.  
+- **Unpredictable driver** (troublemaker) that may brake suddenly.  
+- Adaptive vs fixed traffic light modes.  
+- Detailed CSV logging of events.  
+- Automated analysis with advanced graphs.  
 
 ---
 
@@ -37,21 +44,28 @@ Two modes of operation are supported:
 
 ```
 v2x_traffic_light_sim/
-├── vehicle.py # Vehicle class
-├── traffic_light.py # TrafficLight class
-├── simulation.py # Basic logic without animation
-├── animated_simulation.py # Visual animation (matplotlib)
-├── compare_simulation.py # Comparison of adaptive vs fixed
+├── vehicle.py # Vehicle class (with delays & troublemaker)
+├── traffic_light.py # Traffic light logic (adaptive/fixed)
+├── simulation.py # Core simulation (text mode)
+├── animated_simulation.py # Animated visualization
+├── animated_compare.py # Side-by-side fixed vs adaptive
+├── compare_simulation.py # Queue length comparison
+├── analyze_log.py # Post-simulation analytics
 ├── data/
-│ └── traffic_log.csv # Log of vehicle states
+│ └── traffic_log.csv # Vehicle log (generated)
 ├── visuals/
-│ ├── traffic_animation.gif # Animated movement
-│ ├── queue_plot.png # Queue length over time
-│ ├── queue_comparison.png # Comparison of two modes
-│ └── banner.png # GitHub banner
+│ ├── traffic_animation.gif
+│ ├── compare_animation.gif
+│ ├── queue_comparison.png
+│ ├── queue_length.png
+│ ├── trajectories.png
+│ ├── speeds.png
+│ ├── v2x_diagram.png
+│ └── banner.png
 ├── README.md
+├── technical_description.md
 ├── requirements.txt
-├── .gitignore
+└── .gitignore
 ```
 
 ---
@@ -84,6 +98,24 @@ This log is used to analyze queue length and behavior over time.
 
 ---
 
+## 📈 Advanced Results
+
+### Queue Length Over Time
+![Queue Length](visuals/queue_length.png)
+
+### Vehicle Trajectories
+![Trajectories](visuals/trajectories.png)
+
+### Vehicle Speeds
+![Speeds](visuals/speeds.png)
+
+**Observations:**
+- Adaptive traffic light reduces average queue length vs fixed mode.
+- Sudden braking by the troublemaker propagates to following vehicles.
+- Speed profiles show smooth deceleration/acceleration instead of instant stops.
+
+---
+
 ## ⚙️ Installation
 
 ```bash
@@ -109,16 +141,30 @@ python animated_simulation.py
 python compare_simulation.py
 ```
 
+**Side-by-side comparison**
+
+```bash
+python animated_compare.py
+```
+
+**Analyze logs**
+
+```bash
+python analyze_log.py
+```
+
 ---
 
 ## 🔍 Parameter Justification
 
-| Parameter                  | Value                       | Reasoning                                                    |
-| -------------------------- | --------------------------- | ------------------------------------------------------------ |
-| **Number of vehicles**     | `5`                         | Allows observable traffic formation in a simple 1-lane setup |
-| **Traffic light position** | `100 m`                     | Easy reference point for movement, graphs, and V2I zone      |
-| **Stop threshold**         | `5 m`                       | Realistic braking distance near traffic light                |
-| **Adaptive decision zone** | ≥`3` vehicles within `30 m` | Models a local traffic cluster requiring delayed red phase   |
+| Parameter                  | Value                   | Purpose                      |
+| -------------------------- | ----------------------- | ---------------------------- |
+| Number of vehicles         | 8                       | Sufficient to form a queue   |
+| Traffic light position     | 100 m                   | Intersection reference point |
+| Stop threshold             | 5 m                     | Realistic braking distance   |
+| Reaction delay             | 0.5–1.5 sec             | Driver behavior simulation   |
+| Troublemaker probability   | 1 per simulation        | Models unpredictable driver  |
+| Adaptive trigger condition | ≥3 vehicles within 30 m | Detects traffic clusters     |
 
 ---
 
@@ -131,7 +177,19 @@ python compare_simulation.py
 ---
 
 ## 🧠 Conclusion
-This project demonstrates a simple but effective implementation of a V2I adaptive traffic light model using Python. Even this basic simulation reveals the contrast between a conventional fixed-timer system and an intelligent traffic system that dynamically responds to real-time vehicle data.
+This simulation demonstrates a more realistic V2I adaptive traffic light system with:
+
+- mixed vehicle types,
+
+- driver delays,
+
+- unpredictable behaviors,
+
+- adaptive vs fixed mode comparison,
+
+- advanced analytics via logged data.
+
+It highlights how adaptive V2X communication can significantly improve intersection efficiency, reduce queue lengths, and handle non-ideal driver behaviors.
 
 ---
 
