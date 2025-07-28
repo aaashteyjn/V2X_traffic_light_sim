@@ -3,14 +3,15 @@
 import random
 
 class Vehicle:
-    def __init__(self, id, position, speed=None, length=None, vtype=None, is_troublemaker=False):
+    def __init__(self, id, position, lane=0, speed=None, length=None, vtype=None, is_troublemaker=False):
         self.id = id
+        self.lane = lane
         self.type = vtype if vtype else random.choice(["car", "truck"])
         self.is_troublemaker = is_troublemaker
-        
+
         if self.type == "car":
             self.length = length if length else 4.5
-            self.max_speed = speed if speed else random.uniform(8, 12)
+            self.max_speed = speed if speed else random.uniform(8, 12)  # м/с
             self.acceleration = 2.5
             self.deceleration = -4.0
         else:
@@ -27,8 +28,12 @@ class Vehicle:
         self.reaction_delay = random.uniform(0.5, 1.5)
         self.delay_timer = 0
 
-        # фактор непредсказуемости
+        # вероятность неожиданного торможения
         self.random_brake_chance = 0.05 if is_troublemaker else 0
+
+    def lane_y(self):
+        """Возвращает Y-координату машины по полосе"""
+        return -0.3 + self.lane * 0.8
 
     def move(self, dt, front_vehicle=None, light_state="green", light_position=None):
         dist_light = self.distance_to_light(light_position) if light_position else float('inf')
@@ -57,7 +62,7 @@ class Vehicle:
             self.delay_timer = 0
             self.stopped = False
 
-        # изменение скорости
+        # динамика скорости
         if self.stopped:
             self.speed = max(0, self.speed + self.deceleration * dt)
         else:
@@ -65,6 +70,43 @@ class Vehicle:
 
         # движение
         self.position += self.speed * dt
+
+    def can_change_lane(self, other_vehicles, num_lanes, direction):
+        """Проверяет возможность перестроения: direction=-1 (влево), +1 (вправо)"""
+        new_lane = self.lane + direction
+        if new_lane < 0 or new_lane >= num_lanes:
+            return False
+
+        # ближайшие машины на новой полосе
+        front = None
+        back = None
+        for ov in other_vehicles:
+            if ov.lane == new_lane:
+                if ov.position > self.position and (front is None or ov.position < front.position):
+                    front = ov
+                if ov.position < self.position and (back is None or ov.position > back.position):
+                    back = ov
+
+        safe_front = (front is None) or ((front.position - self.position) > 10)
+        safe_back = (back is None) or ((self.position - back.position) > 8)
+        if not (safe_front and safe_back):
+            return False
+
+        # оценка выгоды
+        front_current = None
+        for ov in other_vehicles:
+            if ov.lane == self.lane and ov.position > self.position:
+                if front_current is None or ov.position < front_current.position:
+                    front_current = ov
+
+        current_speed_ahead = front_current.speed if front_current else self.max_speed
+        new_speed_ahead = front.speed if front else self.max_speed
+
+        return new_speed_ahead > current_speed_ahead + 1
+
+    def change_lane(self, direction):
+        """Меняет полосу"""
+        self.lane += direction
 
     def distance_to_light(self, light_position):
         return max(0, light_position - (self.position + self.length))
@@ -77,5 +119,6 @@ class Vehicle:
             'position': self.position,
             'speed': self.speed,
             'troublemaker': self.is_troublemaker,
+            'lane': self.lane,
             'distance_to_light': self.distance_to_light(light_position)
         }

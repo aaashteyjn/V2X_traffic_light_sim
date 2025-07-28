@@ -1,5 +1,36 @@
+# Python cache
 __pycache__/
-*.pyc
-*.log
-data/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and logs
+data/*.csv
+!data/.gitkeep   # если нужно оставить пустую папку data
+
+# Visual outputs
+visuals/*.png
 visuals/*.gif
+visuals/*.jpg
+!visuals/.gitkeep   # оставить папку visuals в репо
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE configs
+.vscode/
+.idea/
+*.swp
+
+# OS specific
+ehthumbs.db
+desktop.ini

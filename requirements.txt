@@ -1,2 +1,12 @@
-matplotlib>=3.7
-pillow>=9.0 
+# Core
+python>=3.10
+
+# Visualization
+matplotlib>=3.7.1
+pillow>=9.5.0
+
+# Data analysis
+pandas>=2.0.3
+
+# Optional 
+notebook>=7.0.0
