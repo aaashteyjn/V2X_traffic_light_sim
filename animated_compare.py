@@ -232,4 +232,8 @@ def update(frame):
 frames = int(SIM_DURATION / DT)
 ani = animation.FuncAnimation(fig, update, frames=frames, interval=300, blit=True, repeat=False)
 plt.tight_layout()
+
+# Save animation as GIF
+# ani.save("visuals/simulation_comparison.gif", writer="pillow", fps=3)
+
 plt.show()
