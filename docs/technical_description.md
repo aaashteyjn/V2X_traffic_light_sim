@@ -7,93 +7,86 @@
 
 ## 1. Project Topic
 
-This project presents a simulation of a traffic light control system at a two-road intersection, integrating **Vehicle-to-Infrastructure (V2I)** communication and **Reinforcement Learning (RL)**.  
-The goal is to compare traditional and intelligent control modes in terms of traffic efficiency and safety.
+The project simulates a traffic light at a two-road intersection with V2I (Vehicle-to-Infrastructure) communication and reinforcement learning.  
+The idea is to see how adaptive control and an RL agent can improve traffic flow compared to a regular fixed-timer light.
 
 ---
 
-## 2. Objective
+## 2. Goal
 
-To design and evaluate a simplified yet realistic intersection model where traffic lights adapt to real-time conditions via V2I communication and reinforcement learning, aiming to reduce waiting times and improve traffic flow.
-
----
-
-## 3. Tasks
-
-- Develop a Python-based simulation of an intersection with crossing roads.  
-- Implement vehicles with stochastic characteristics:  
-  - length (car/truck),  
-  - speed, acceleration and deceleration,  
-  - reaction delays,  
-  - random "troublemaker" behavior.  
-- Implement three traffic light control modes:  
-  1. **Fixed Timer** — static signal cycles.  
-  2. **Adaptive (V2I)** — responds to detected queues.  
-  3. **Reinforcement Learning Agent (PPO)** — trained to minimize congestion.  
-- Log all vehicle states and traffic light changes into CSV files.  
-- Produce visualizations:  
-  - animated simulation with visible road, vehicles, and traffic lights,  
-  - comparative plots of queue lengths and average speeds.  
-- Evaluate the performance of each control mode using queue length, speed, and crash metrics.
+To create a simple but realistic model of an intersection that shows the difference between traditional traffic light control and smarter approaches based on V2X communication and RL.
 
 ---
 
-## 4. Technologies Used
+## 3. Main Tasks
 
-- **Programming Language:** Python 3.10+  
-- **Visualization:** matplotlib (animations, plots)  
-- **Data Analysis:** pandas, numpy  
-- **Reinforcement Learning:** Stable-Baselines3 (PPO), PyTorch  
-- **Simulation Framework:** Gymnasium (custom environment)  
-- **Data Storage:** CSV logs  
-- **IDE:** VS Code / Jupyter Notebook  
-
----
-
-## 5. Model Description
-
-### 5.1 Core Components
-
-- **Vehicle**
-  - Attributes: position, speed, length, acceleration, stopped status  
-  - Behaviors: movement, delayed reactions, random braking ("troublemaker"), V2I communication  
-
-- **TrafficLight**
-  - States: `green_x`, `green_y`, `yellow_x`, `yellow_y`  
-  - Modes: Fixed, Adaptive, RL  
-  - Decision-making: evaluates queues, applies switching logic  
-
-- **IntersectionEnv (Gymnasium Environment)**
-  - Observation: `[queue_x, queue_y, light_state]`  
-  - Action: `0 = hold current state`, `1 = request switch`  
-  - Reward:  
-    - `- (queue_x + queue_y)` (penalty for queues)  
-    - `- 10 * crashes` (penalty for collisions)  
-    - `+ 3 * passed vehicles` (reward for throughput)  
-    - `- 2` for unnecessary switching  
-
-### 5.2 Key Parameters
-
-| Parameter                  | Value                   | Rationale                                                       |
-| -------------------------- | ----------------------- | --------------------------------------------------------------- |
-| Number of vehicles         | 8                       | Provides sufficient density to form queues                      |
-| Traffic light position     | 0 m (vehicles start up to -100 m) | Intersection reference; vehicles generated up to 100 m before the stop line |
-| Stop threshold             | 5 m                     | Reflects typical braking distance at urban speeds               |
-| Reaction delay             | 0.3–0.8 s               | Models human driver reaction time (average ~0.7 s)              |
-| Troublemaker probability   | 1 per simulation        | Adds stochastic driver unpredictability                         |
-| Adaptive trigger condition | ≥3 vehicles within 30 m | Detects traffic clusters for adaptive switching                 |
-| Yellow light duration      | 2 s                     | Realistic transitional period before switching                  |
-| RL training timesteps      | 300,000                 | Ensures stable PPO agent training                              |
+- Write a Python simulation with cars and trucks moving through an intersection.  
+- Add random features to vehicles (speed, size, reaction delay, and even a "troublemaker" car that brakes suddenly).  
+- Implement three modes for the traffic light:
+  1. **Fixed Timer** — cycles automatically every 15 seconds.  
+  2. **Adaptive (V2I)** — uses vehicle data to decide when to switch.  
+  3. **RL Agent (PPO)** — learns how to minimize queues.  
+- Record everything (vehicle positions, speeds, light states) into CSV logs.  
+- Make visualizations: animated traffic movement and plots showing queue lengths and average speeds.  
+- Compare the three approaches.
 
 ---
 
-## 6. Results
+## 4. Tools and Technologies
 
-- **Adaptive V2I** reduced the average queue length by ~40% compared to the Fixed Timer.  
-- **Reinforcement Learning agent (PPO)** demonstrated learning capability but requires extended training to consistently outperform the Adaptive mode.  
-- **Average speeds** were higher under Adaptive and RL compared to Fixed Timer.  
-- **Troublemaker vehicle** induced local disturbances, effectively testing system robustness.  
-- Visualization confirmed smoother and more efficient traffic flow in Adaptive and RL modes.  
+- **Language:** Python 3.10+  
+- **Libraries:** matplotlib, pandas, numpy  
+- **Reinforcement Learning:** Gymnasium + Stable-Baselines3 (PPO)  
+- **Neural Network Backend:** PyTorch  
+- **Data Format:** CSV logs  
+- **Environment:** VS Code / Jupyter Notebook  
+
+---
+
+## 5. Model Overview
+
+### Vehicles
+- Each vehicle has a length (car or truck), a random max speed, acceleration, and a reaction delay.  
+- Vehicles can stop if the light is red or if another car is too close.  
+- A "troublemaker" car randomly brakes to make the simulation less predictable.
+
+### Traffic Light
+- Works in three possible modes: Fixed, Adaptive, or RL.  
+- Has states: `green_x`, `green_y`, `yellow_x`, `yellow_y`.  
+- In Adaptive mode, it switches when 3+ cars are waiting in the other direction.  
+- In RL mode, the agent decides whether to keep the current light or switch.
+
+### RL Environment
+- **Observation:** `[queue_x, queue_y, light_state]`  
+- **Actions:** `0 = keep current`, `1 = switch`  
+- **Reward:**  
+  - Penalizes queues and crashes  
+  - Rewards vehicles passing through  
+  - Small penalty for switching too often  
+
+---
+
+## 6. Parameters Used
+
+| Parameter                  | Value                   | Why It Was Chosen                                                |
+| -------------------------- | ----------------------- | ---------------------------------------------------------------- |
+| Number of vehicles         | 8                       | Enough to form queues but not too many for the animation          |
+| Traffic light position     | 0 m (cars start up to -100 m) | Easy reference point, cars spawn up to 100 m away        |
+| Stop threshold             | 5 m                     | Matches a realistic braking distance in urban conditions          |
+| Reaction delay             | 0.3–0.8 s               | Based on typical human reaction time (~0.7 s on average)          |
+| Troublemaker probability   | 1 per simulation        | To add unpredictability                                          |
+| Adaptive trigger condition | ≥3 vehicles within 30 m | Makes the adaptive mode sensitive to traffic clusters             |
+| Yellow light duration      | 2 s                     | Standard time for switching phases                               |
+| RL training timesteps      | 300,000                 | Enough to get the PPO agent to start learning effectively        |
+
+---
+
+## 7. Results
+
+- The Adaptive (V2I) mode cut average queue length by about 40% compared to Fixed Timer.  
+- The RL agent showed it can learn but still needs more training to beat Adaptive mode consistently.  
+- Average speeds were higher in Adaptive and RL than in Fixed mode.  
+- The troublemaker car caused slowdowns but helped test how the system reacts to random events.  
 
 ### Key Figures
 
@@ -108,40 +101,17 @@ To design and evaluate a simplified yet realistic intersection model where traff
 
 ---
 
-## 7. Conclusion
+## 8. Conclusion
 
-This project shows that even a simplified V2X-based traffic control system provides measurable efficiency gains over a fixed-timer signal. Adaptive systems already show substantial improvement, and reinforcement learning agents hold promise for further advancements.
-
-Future directions include:  
-- Multi-lane and multi-intersection simulations  
-- Integration of vehicle priority classes (buses, emergency services)  
-- Training with larger datasets and advanced RL algorithms  
-- Evaluation under varying traffic density and accident rates  
-
----
-
-## 8. Appendix
-
-- **animated_compare.py** — visualization of Fixed / Adaptive / RL modes  
-- **train_rl.py** — reinforcement learning training script  
-- **analyze_log.py** — performance analysis and plots  
-- **vehicle.py** — vehicle dynamics model  
-- **traffic_light.py** — traffic light logic  
-- **intersection_env.py** — custom RL environment  
-- **data/** — simulation logs (CSV)  
-- **visuals/** — plots and animation outputs  
-- **archive/** — legacy scripts for reference
+Even with a simple model, it's clear that smart traffic light control can improve flow compared to a regular fixed timer. Adaptive mode already shows big improvements, and reinforcement learning looks promising if trained longer.
 
 ---
 
 ## 9. Future Work
 
-The current simulation provides a simplified yet illustrative model of V2X-based traffic light control. Future improvements may include:
-
-- **Multi-lane intersections** — introducing additional lanes with overtaking and lane changes.
-- **Multiple intersections** — simulating network-wide coordination between traffic lights.
-- **Priority vehicles** — modeling buses, trams, and emergency services with higher priority.
-- **Weather and environmental conditions** — factoring in visibility and road surface changes.
-- **Advanced RL algorithms** — e.g., DQN, A3C, or hybrid models for better adaptability.
-- **Scalability tests** — evaluating performance under heavy traffic scenarios.
-- **Integration with real-world data** — using open traffic datasets for training and validation.
+Some ideas I’d like to try next:
+- Add multi-lane intersections and lane changes  
+- Connect several intersections to see coordination effects  
+- Give priority to buses and emergency vehicles  
+- Try other RL algorithms like DQN or A3C  
+- Test the system on real-world traffic datasets  

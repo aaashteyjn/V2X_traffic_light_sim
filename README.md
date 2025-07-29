@@ -1,23 +1,22 @@
 # V2X Traffic Light Simulation
 
-This project demonstrates a simulation of an adaptive traffic light system with Vehicle-to-Infrastructure (V2I) communication and a reinforcement learning (RL) agent for traffic control. The goal is to analyze and compare three traffic light modes:
-
-- **Fixed Timer** — standard pre-defined cycle
-- **Adaptive (V2I)** — responds to traffic density via vehicle communication
-- **Reinforcement Learning Agent** — trained with PPO to minimize queues and delays
+This project is my attempt to build and test a simulation of traffic lights with V2I (Vehicle-to-Infrastructure) communication and reinforcement learning.  
+The idea is to see how "smart" traffic lights could reduce queues and improve flow compared to the usual fixed-timer mode.
 
 ---
 
-## Features
+## What the Project Does
 
-- Intersection with two perpendicular roads and multiple lanes
-- Vehicles with randomized length, speed, and reaction delay
-- *Troublemaker vehicle* that occasionally brakes unexpectedly
-- Stop lines and visual traffic lights in the center of the intersection
-- Three control modes: *Fixed*, *Adaptive*, *RL Agent*
-- Animated visualization with visible roads, square vehicles, and light states
-- Detailed logs saved in CSV for further analysis
-- Performance evaluation with Python data analysis
+- Two crossing roads with stop lines and a traffic light in the middle
+- Cars and trucks with different speeds, lengths, and reaction delays
+- A "troublemaker" vehicle that sometimes brakes suddenly
+- Three traffic light modes:
+  - **Fixed Timer** (regular green-red cycle)
+  - **Adaptive (V2I)** (switches depending on queue length)
+  - **RL Agent (PPO)** (trained to optimize flow)
+
+The simulation runs as an animation so you can actually watch the cars move and react to the lights.  
+All runs are logged in CSV files so I can analyze queues, speeds, and compare the three modes.
 
 ---
 
@@ -54,6 +53,11 @@ v2x_traffic_light_sim/
 
 ## Results
 
+- Adaptive (V2I) mode usually gives shorter queues than the fixed timer.
+- The RL agent can learn to control the light, but it still needs longer training to clearly beat adaptive mode.
+- Average speeds are higher in adaptive and RL compared to fixed.
+- The "troublemaker" makes the traffic less predictable, which shows how the system reacts to sudden changes.
+
 ### Logging
 
 During each simulation, detailed logs are recorded in the `data/` directory:
@@ -64,8 +68,6 @@ During each simulation, detailed logs are recorded in the `data/` directory:
 
 Each entry contains:  
 `time, vehicle_id, direction, position_x, position_y, speed, stopped, troublemaker, light_state`
-
-These logs provide the basis for performance analysis, including queue lengths, average speeds, and crash detection.
 
 ---
 
@@ -84,15 +86,6 @@ These logs provide the basis for performance analysis, including queue lengths, 
 The following animation shows traffic flow under three control modes (Fixed Timer, Adaptive V2I, RL Agent):
 
 ![Simulation](visuals/simulation_comparison.gif)
-
----
-
-## Performance Highlights
-
-- **Adaptive V2I** reduced average queue length by ~40% compared to Fixed Timer.  
-- **RL Agent** shows learning capability, though additional training is needed for consistent superiority.  
-- **Queue analysis** demonstrates smoother traffic flow and reduced congestion under Adaptive and RL modes.  
-- **Troublemaker vehicle** introduces realistic stochastic disruptions, highlighting system robustness.  
 
 ---
 
@@ -117,13 +110,13 @@ cd V2X_Traffic_Light_Sim
 pip install -r requirements.txt
 ```
 
-## Run the animated imulation
+## Run the animated simulation
 
 ```bash
 python animated_compare.py
 ```
 
-**Train the RL-agent**
+**Train the RL-agent (takes a while)**
 
 ```bash
 python train_rl.py
@@ -150,7 +143,7 @@ python analyze_log.py
 
 ---
 
-## Technologies
+## Techn stack
 
 - Python 3.10+
 - Matplotlib for visualization
@@ -158,12 +151,6 @@ python analyze_log.py
 - Gymnasium for RL environment
 - Stable-Baselines3 (PPO) for training RL agent
 - PyTorch backend
-
----
-
-## Conclusion
-
-This project demonstrates how combining V2I communication and reinforcement learning can significantly improve traffic flow efficiency at intersections. Even in a simplified setting, the results highlight the advantages of adaptive and learning-based traffic light systems over traditional fixed timers.
 
 ---
 
