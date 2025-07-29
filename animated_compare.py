@@ -42,21 +42,30 @@ for path in [LOG_FIXED, LOG_ADAPT, LOG_RL]:
             "speed", "stopped", "troublemaker", "light_state"
         ])
 
+
 def generate_vehicle(direction, lane, start_pos, vid, troublemaker_id):
+    """
+    Create a single vehicle with given parameters.
+    """
     return Vehicle(
-        id=vid,
+        vid,
         direction=direction,
         start_pos=start_pos,
         lane=lane,
         is_troublemaker=(vid == troublemaker_id)
     )
 
+
 def generate_vehicles():
+    """
+    Generate vehicles for both X and Y directions, including one troublemaker.
+    """
     vehicles = []
     troublemaker_id = random.randint(0, NUM_VEHICLES_X + NUM_VEHICLES_Y - 1)
     vid = 0
 
-    for lane in [-3, +3]:  # Horizontal (X)
+    # Horizontal (X)
+    for lane in [-3, +3]:
         pos = -100
         for _ in range(NUM_VEHICLES_X // 2):
             v = generate_vehicle("x", lane, pos, vid, troublemaker_id)
@@ -64,7 +73,8 @@ def generate_vehicles():
             pos -= random.randint(20, 30)
             vid += 1
 
-    for lane in [-3, +3]:  # Vertical (Y)
+    # Vertical (Y)
+    for lane in [-3, +3]:
         pos = -100
         for _ in range(NUM_VEHICLES_Y // 2):
             v = generate_vehicle("y", lane, pos, vid, troublemaker_id)
@@ -74,25 +84,33 @@ def generate_vehicles():
 
     return vehicles
 
+
 def setup_scene(ax, title):
+    """
+    Prepare the background for a simulation subplot:
+    - Draw the intersection roads
+    - Add stop lines
+    - Place traffic lights
+    """
     ax.set_xlim(-120, 120)
     ax.set_ylim(-120, 120)
     ax.set_aspect("equal")
     ax.axis("off")
     ax.set_title(title)
 
+    # Roads
     road_x = patches.Rectangle((-120, -8), 240, 16, color="lightgray")
     road_y = patches.Rectangle((-8, -120), 16, 240, color="lightgray")
     ax.add_patch(road_x)
     ax.add_patch(road_y)
 
-    # стоп-линии
+    # Stop lines
     stop_x = patches.Rectangle((-STOP_LINE_DISTANCE, -8), 2, 16, color="darkred")
     stop_y = patches.Rectangle((-8, -STOP_LINE_DISTANCE), 16, 2, color="darkred")
     ax.add_patch(stop_x)
     ax.add_patch(stop_y)
 
-    # светофоры
+    # Traffic lights (initial state)
     light_x = patches.Circle((-15, 0), radius=3, color="green")
     light_y = patches.Circle((0, -15), radius=3, color="red")
     ax.add_patch(light_x)
@@ -100,7 +118,11 @@ def setup_scene(ax, title):
 
     return light_x, light_y
 
+
 def init_vehicle_patches(ax, vehicles):
+    """
+    Create square patches for all vehicles.
+    """
     car_patches = []
     for v in vehicles:
         rect = patches.Rectangle((v.x - 2, v.y - 2), 4, 4,
@@ -109,25 +131,31 @@ def init_vehicle_patches(ax, vehicles):
         ax.add_patch(rect)
     return car_patches
 
+
 def update_lights(light, lights):
-    if light.state == "yellow_x" or light.state == "yellow_y":
+    """
+    Update traffic light colors based on the current light state.
+    """
+    if light.state in ["yellow_x", "yellow_y"]:
         lights[0].set_color("yellow")
         lights[1].set_color("yellow")
     else:
         lights[0].set_color("green" if light.state == "green_x" else "red")
         lights[1].set_color("green" if light.state == "green_y" else "red")
 
-# Setup
+
+# Setup initial vehicles
 random.seed(42)
 vehicles_fixed = generate_vehicles()
 vehicles_adaptive = copy.deepcopy(vehicles_fixed)
 vehicles_rl = copy.deepcopy(vehicles_fixed) if RL_AVAILABLE else []
 
+# Setup traffic lights
 light_fixed = TrafficLight(position=LIGHT_POSITION, mode="fixed")
 light_adaptive = TrafficLight(position=LIGHT_POSITION, mode="adaptive")
 light_rl = TrafficLight(position=LIGHT_POSITION, mode="rl") if RL_AVAILABLE else None
 
-# Graphs
+# Setup subplots
 cols = 3 if RL_AVAILABLE else 2
 fig, axes = plt.subplots(1, cols, figsize=(6 * cols, 6))
 if cols == 2:
@@ -145,7 +173,12 @@ patches_fixed = init_vehicle_patches(ax1, vehicles_fixed)
 patches_adaptive = init_vehicle_patches(ax2, vehicles_adaptive)
 patches_rl = init_vehicle_patches(ax3, vehicles_rl) if RL_AVAILABLE else []
 
+
 def update(frame):
+    """
+    Update function for the animation.
+    Runs simulation steps for each mode, updates vehicles and lights.
+    """
     t = frame * DT
 
     def sim_step(vehicles, light, patches, logfile, lights, rl=False):
@@ -171,11 +204,11 @@ def update(frame):
                     front = min([ov for ov in vehicles if ov.direction == "y" and ov.y > v.y],
                                 key=lambda x: x.y, default=None)
 
-                v.move(DT, front_vehicle=front,
-                       light=light, light_pos=LIGHT_POSITION)
+                v.move(DT, front_vehicle=front, light=light, light_pos=LIGHT_POSITION)
 
-                color = "purple" if v.is_troublemaker else "red" if v.stopped else (
-                        "blue" if v.type == "car" else "orange")
+                color = "purple" if v.is_troublemaker else \
+                        "red" if v.stopped else \
+                        ("blue" if v.type == "car" else "orange")
                 patches[i].set_xy((v.x - 2, v.y - 2))
                 patches[i].set_color(color)
 
@@ -194,6 +227,7 @@ def update(frame):
     if RL_AVAILABLE:
         drawn += patches_rl + [lights_rl[0], lights_rl[1]]
     return drawn + [lights_fixed[0], lights_fixed[1], lights_adaptive[0], lights_adaptive[1]]
+
 
 frames = int(SIM_DURATION / DT)
 ani = animation.FuncAnimation(fig, update, frames=frames, interval=300, blit=True, repeat=False)

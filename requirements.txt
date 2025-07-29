@@ -1,12 +1,8 @@
-# Core
-python>=3.10
-
-# Visualization
-matplotlib>=3.7.1
-pillow>=9.5.0
-
-# Data analysis
-pandas>=2.0.3
-
-# Optional 
-notebook>=7.0.0
+matplotlib>=3.7
+numpy>=1.24
+pandas>=2.0
+gymnasium>=0.29
+shimmy>=2.0
+stable-baselines3>=2.0
+torch>=2.0
+tqdm>=4.65
