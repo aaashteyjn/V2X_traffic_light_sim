@@ -167,18 +167,6 @@ This project demonstrates how combining V2I communication and reinforcement lear
 
 ---
 
-## Future Work
-
-The current simulation provides a simplified yet illustrative model of V2X-based traffic light control. Future improvements may include:
-
-- **Multi-lane intersections** — introducing additional lanes with overtaking and lane changes.
-- **Multiple intersections** — simulating network-wide coordination between traffic lights.
-- **Priority vehicles** — modeling buses, trams, and emergency services with higher priority.
-- **Weather and environmental conditions** — factoring in visibility and road surface changes.
-- **Advanced RL algorithms** — e.g., DQN, A3C, or hybrid models for better adaptability.
-- **Scalability tests** — evaluating performance under heavy traffic scenarios.
-- **Integration with real-world data** — using open traffic datasets for training and validation.
-
 ## Technical description (md)
 
 [Technical description (Markdown)](docs/technical_description.md)

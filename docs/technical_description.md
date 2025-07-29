@@ -98,13 +98,13 @@ To design and evaluate a simplified yet realistic intersection model where traff
 ### Key Figures
 
 - **Total Queue Length Over Time**  
-  ![Queue Total](./visuals/queue_total_comparison.png)
+  ![Queue Total](../visuals/queue_total_comparison.png)
 
 - **Queue by Direction (RL Agent)**  
-  ![Queue RL](./visuals/queue_rl_by_direction.png)
+  ![Queue RL](../visuals/queue_rl_by_direction.png)
 
 - **Performance Comparison**  
-  ![Performance](./visuals/performance_comparison_intersection.png)
+  ![Performance](../visuals/performance_comparison_intersection.png)
 
 ---
 
@@ -131,3 +131,17 @@ Future directions include:
 - **data/** — simulation logs (CSV)  
 - **visuals/** — plots and animation outputs  
 - **archive/** — legacy scripts for reference
+
+---
+
+## 9. Future Work
+
+The current simulation provides a simplified yet illustrative model of V2X-based traffic light control. Future improvements may include:
+
+- **Multi-lane intersections** — introducing additional lanes with overtaking and lane changes.
+- **Multiple intersections** — simulating network-wide coordination between traffic lights.
+- **Priority vehicles** — modeling buses, trams, and emergency services with higher priority.
+- **Weather and environmental conditions** — factoring in visibility and road surface changes.
+- **Advanced RL algorithms** — e.g., DQN, A3C, or hybrid models for better adaptability.
+- **Scalability tests** — evaluating performance under heavy traffic scenarios.
+- **Integration with real-world data** — using open traffic datasets for training and validation.
