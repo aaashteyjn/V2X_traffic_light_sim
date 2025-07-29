@@ -1,132 +1,96 @@
-# vehicle.py
-
 import random
 
+STOP_LINE_DISTANCE = 20
+
 class Vehicle:
-    def __init__(self, id, position, lane=0, speed=None, length=None, vtype=None, is_troublemaker=False):
+    def __init__(self, id, direction="x", start_pos=None, lane=0,
+                 is_troublemaker=False, fast_start=True):
         self.id = id
+        self.length = random.choice([4.5, 6.0])
+        self.type = "car" if self.length == 4.5 else "truck"
+
+        # скорость ближе к городской
+        self.max_speed = random.uniform(6, 12)   # м/с (~22-43 км/ч)
+        self.speed = random.uniform(5, self.max_speed) if fast_start else random.uniform(4, self.max_speed)
+        self.acceleration = 1.5
+        self.deceleration = 3.0
+        self.reaction_delay = random.uniform(0.3, 0.8)
+
+        self.direction = direction
         self.lane = lane
-        self.type = vtype if vtype else random.choice(["car", "truck"])
         self.is_troublemaker = is_troublemaker
-
-        if self.type == "car":
-            self.length = length if length else 4.5
-            self.max_speed = speed if speed else random.uniform(8, 12)
-            self.acceleration = 2.5
-            self.deceleration = -4.0
-        else:
-            self.length = length if length else 10
-            self.max_speed = speed if speed else random.uniform(5, 8)
-            self.acceleration = 1.5
-            self.deceleration = -3.0
-
-        self.position = position
-        self.speed = self.max_speed
         self.stopped = False
+        self.delay_timer = 0.0
 
-        # задержка реакции
-        self.reaction_delay = random.uniform(0.5, 1.5)
-        self.delay_timer = 0
-
-        # вероятность неожиданного торможения
-        self.random_brake_chance = 0.05 if is_troublemaker else 0
-
-    def lane_y(self):
-        return -0.3 + self.lane * 0.8
-
-    def move(self, dt, front_vehicle=None, light_state="green", light_position=None):
-        dist_light = self.distance_to_light(light_position) if light_position else float('inf')
-        need_to_stop = False
-
-        if light_state == "red" and dist_light < 10:
-            need_to_stop = True
-
-        if front_vehicle:
-            gap = (front_vehicle.position - self.position) - front_vehicle.length
-            if gap < 5:
-                need_to_stop = True
-
-        if self.is_troublemaker and random.random() < self.random_brake_chance:
-            need_to_stop = True
-
-        if need_to_stop:
-            self.delay_timer += dt
-            if self.delay_timer >= self.reaction_delay:
-                self.stopped = True
+        if direction == "x":
+            self.x = start_pos if start_pos is not None else -60
+            self.y = lane
         else:
-            self.delay_timer = 0
-            self.stopped = False
+            self.x = lane
+            self.y = start_pos if start_pos is not None else -60
 
-        if self.stopped:
-            self.speed = max(0, self.speed + self.deceleration * dt)
-        else:
-            self.speed = min(self.max_speed, self.speed + self.acceleration * dt)
-
-        self.position += self.speed * dt
-
-    def can_change_lane(self, other_vehicles, num_lanes, direction):
-        new_lane = self.lane + direction
-        if new_lane < 0 or new_lane >= num_lanes:
-            return False
-
-        front = None
-        back = None
-        for ov in other_vehicles:
-            if ov.lane == new_lane:
-                if ov.position > self.position and (front is None or ov.position < front.position):
-                    front = ov
-                if ov.position < self.position and (back is None or ov.position > back.position):
-                    back = ov
-
-        safe_front = (front is None) or ((front.position - self.position) > 10)
-        safe_back = (back is None) or ((self.position - back.position) > 8)
-        if not (safe_front and safe_back):
-            return False
-
-        front_current = None
-        for ov in other_vehicles:
-            if ov.lane == self.lane and ov.position > self.position:
-                if front_current is None or ov.position < front_current.position:
-                    front_current = ov
-
-        current_speed_ahead = front_current.speed if front_current else self.max_speed
-        new_speed_ahead = front.speed if front else self.max_speed
-
-        return new_speed_ahead > current_speed_ahead + 1
-
-    def change_lane(self, direction):
-        self.lane += direction
-
-    def distance_to_light(self, light_position):
-        return max(0, light_position - (self.position + self.length))
-
-    def send_data(self, light_position):
+    def send_data(self, light_pos):
         return {
-            'id': self.id,
-            'type': self.type,
-            'length': self.length,
-            'position': self.position,
-            'speed': self.speed,
-            'troublemaker': self.is_troublemaker,
-            'lane': self.lane,
-            'distance_to_light': self.distance_to_light(light_position)
+            "id": self.id,
+            "direction": self.direction,
+            "lane": self.lane,
+            "speed": self.speed,
+            "stopped": self.stopped,
+            "troublemaker": self.is_troublemaker
         }
 
-    def broadcast_event(self, event_type, receivers, current_time):
-        """Создаёт V2V-сообщения для других машин"""
-        messages = []
-        for r in receivers:
-            if r.id == self.id:
-                continue
-            delay = random.uniform(0.05, 0.2)  # 50–200 мс
-            delivered = random.random() > 0.1  # 10% потерь
-            messages.append({
-                "time_sent": current_time,
-                "time_receive": current_time + delay,
-                "sender": self.id,
-                "receiver": r.id,
-                "event": event_type,
-                "delay": round(delay, 3),
-                "delivered": delivered
-            })
-        return messages
+    def move(self, dt, front_vehicle=None, light=None, light_pos=0):
+        self.delay_timer += dt
+        must_stop = False
+        pos = self.x if self.direction == "x" else self.y
+        stop_line = light_pos - STOP_LINE_DISTANCE
+        approach_distance = 15
+
+        # --- проверка светофора ---
+        if light and pos < stop_line:
+            can_go = light.allows_movement(self.direction, pos, stop_line)
+
+            # Для первых машин жёсткая проверка (чтобы не пролетали)
+            if self.id < 4 and not can_go:
+                must_stop = True
+
+            if not can_go:
+                distance_to_line = stop_line - pos
+                if distance_to_line <= approach_distance:
+                    must_stop = True
+                else:
+                    # далеко от стоп-линии — плавное замедление
+                    self.speed = max(self.speed - self.deceleration * dt * 0.5,
+                                     self.max_speed * 0.5)
+
+        # --- проверка передней машины ---
+        if front_vehicle:
+            if self.direction == "x":
+                gap = front_vehicle.x - self.x - self.length
+            else:
+                gap = front_vehicle.y - self.y - self.length
+
+            safe_gap = 7 + self.speed * 0.3  # больше базовый запас
+            if gap < safe_gap or (front_vehicle.stopped and gap < safe_gap + 2):
+                must_stop = True
+
+        # --- реакция с задержкой ---
+        if must_stop and self.delay_timer >= self.reaction_delay:
+            self.speed = max(0, self.speed - self.deceleration * dt)
+            self.stopped = self.speed < 0.1
+        else:
+            self.speed = min(self.max_speed, self.speed + self.acceleration * dt)
+            self.stopped = False
+
+        # --- непредсказуемое торможение (только до стоп-линии) ---
+        if self.is_troublemaker and pos < stop_line and random.random() < 0.01:
+            self.speed = max(0, self.speed - self.deceleration * dt)
+
+        # --- перемещение ---
+        if self.direction == "x":
+            self.x += self.speed * dt
+        else:
+            self.y += self.speed * dt
+
+        if self.stopped:
+            self.delay_timer = 0
