@@ -98,13 +98,13 @@ To design and evaluate a simplified yet realistic intersection model where traff
 ### Key Figures
 
 - **Total Queue Length Over Time**  
-  ![Queue Total](visuals/queue_total_comparison.png)
+  ![Queue Total](./visuals/queue_total_comparison.png)
 
 - **Queue by Direction (RL Agent)**  
-  ![Queue RL](visuals/queue_rl_by_direction.png)
+  ![Queue RL](./visuals/queue_rl_by_direction.png)
 
 - **Performance Comparison**  
-  ![Performance](visuals/performance_comparison_intersection.png)
+  ![Performance](./visuals/performance_comparison_intersection.png)
 
 ---
 
